@@ -1,7 +1,4 @@
 // Markora — Live Data Engine v3
-// Real-time crypto via Binance WebSocket
-// Market data via Markora Worker (Cloudflare)
-
 const WORKER = 'https://markora-api.harshhimat.workers.dev';
 
 const State = {
@@ -157,6 +154,32 @@ async function renderCommodities() {
   if (ai && gold) ai.textContent = `Gold at $${gold.usd.toLocaleString()} (₹${Math.round(gold.inr).toLocaleString('en-IN')}/oz). Brent crude at $${oil?.usd || '—'}/bbl. INR conversion live.`;
 }
 
+async function renderGlobal() {
+  setLoading('panel-global', 'Loading live global indices...');
+  const data = await api('/global', 60);
+  if (!data || !data.indices || !data.indices.length) return;
+  const panel = document.getElementById('panel-global');
+  if (!panel) return;
+  panel.querySelector('.ticker-bar').innerHTML = data.indices.slice(0, 6).map(i =>
+    `<div class="ticker-item"><div class="ticker-name">${i.name.toUpperCase()}</div><div class="ticker-val">${i.price?.toLocaleString('en-US', { maximumFractionDigits: 0 }) || '—'}</div><div class="ticker-chg">${chg(i.changePct)}</div></div>`
+  ).join('');
+  const grid = panel.querySelector('.mkt-grid');
+  if (grid) grid.innerHTML = data.indices.map(i =>
+    `<div class="mkt-card"><div class="mkt-name">${i.name}</div><div class="mkt-val">${i.price?.toLocaleString('en-US', { maximumFractionDigits: 0 }) || '—'}</div><div class="mkt-chg">${chg(i.changePct)}</div></div>`
+  ).join('');
+  const ai = panel.querySelector('.ai-txt');
+  if (ai && data.indices.length) {
+    const sp = data.indices.find(i => i.name === 'S&P 500');
+    const nikkei = data.indices.find(i => i.name === 'Nikkei 225');
+    const ftse = data.indices.find(i => i.name === 'FTSE 100');
+    const parts = [];
+    if (sp) parts.push(`S&P 500 ${sp.changePct > 0 ? 'up' : 'down'} ${Math.abs(sp.changePct).toFixed(2)}%`);
+    if (ftse) parts.push(`FTSE ${ftse.changePct > 0 ? 'up' : 'down'} ${Math.abs(ftse.changePct).toFixed(2)}%`);
+    if (nikkei) parts.push(`Nikkei ${nikkei.changePct > 0 ? 'up' : 'down'} ${Math.abs(nikkei.changePct).toFixed(2)}%`);
+    ai.textContent = parts.join('. ') + '. Live data via Yahoo Finance.';
+  }
+}
+
 async function renderNews(cat) {
   const path = cat && cat !== 'all' ? `/news?cat=${cat}` : '/news';
   const data = await api(path, 300);
@@ -234,6 +257,7 @@ function loadTab(name) {
   if (name === 'equities') renderEquities();
   if (name === 'forex') renderForex();
   if (name === 'commodities') renderCommodities();
+  if (name === 'global') renderGlobal();
 }
 
 function initFilters() {
@@ -398,7 +422,7 @@ async function initMarkora() {
   initTabs();
   initFilters();
   initSearch();
-  await Promise.all([renderEquities(), renderCrypto(), renderForex(), renderCommodities(), renderNews()]);
+  await Promise.all([renderEquities(), renderCrypto(), renderForex(), renderCommodities(), renderGlobal(), renderNews()]);
   await updateWatchlistPrices();
   setInterval(renderCrypto, 30000);
   setInterval(renderEquities, 60000);
