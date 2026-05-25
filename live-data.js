@@ -67,7 +67,6 @@ function setLoading(panelId, msg = 'Fetching live data...') {
   if (ticker) ticker.innerHTML = `<div class="ticker-item"><div class="ticker-name" style="color:var(--accent)">${msg}</div></div>`;
 }
 
-// ── CRYPTO ────────────────────────────────────────────────────────
 async function renderCrypto() {
   setLoading('panel-crypto', 'Loading live crypto...');
   const [coins, global, fg] = await Promise.all([api('/crypto', 30), api('/crypto/global', 60), api('/fear-greed', 300)]);
@@ -88,7 +87,6 @@ async function renderCrypto() {
   panel.querySelector('.update-time') && (panel.querySelector('.update-time').textContent = 'updated ' + new Date().toLocaleTimeString('en-IN'));
 }
 
-// ── EQUITIES ──────────────────────────────────────────────────────
 async function renderEquities() {
   setLoading('panel-equities', 'Loading NSE data...');
   const data = await api('/equities', 60);
@@ -123,7 +121,6 @@ async function renderEquities() {
   panel.querySelector('.update-time') && (panel.querySelector('.update-time').textContent = 'updated ' + new Date().toLocaleTimeString('en-IN'));
 }
 
-// ── FOREX ─────────────────────────────────────────────────────────
 async function renderForex() {
   const data = await api('/forex', 300);
   if (!data || !data.pairs) return;
@@ -141,7 +138,6 @@ async function renderForex() {
   if (ai && usdInr) ai.textContent = `USD/INR at ${usdInr.rate.toFixed(2)}. Live rates via ExchangeRate API.`;
 }
 
-// ── COMMODITIES ───────────────────────────────────────────────────
 async function renderCommodities() {
   const data = await api('/commodities', 300);
   if (!data || !Array.isArray(data)) return;
@@ -161,7 +157,6 @@ async function renderCommodities() {
   if (ai && gold) ai.textContent = `Gold at $${gold.usd.toLocaleString()} (₹${Math.round(gold.inr).toLocaleString('en-IN')}/oz). Brent crude at $${oil?.usd || '—'}/bbl. INR conversion live.`;
 }
 
-// ── NEWS ──────────────────────────────────────────────────────────
 async function renderNews(cat) {
   const path = cat && cat !== 'all' ? `/news?cat=${cat}` : '/news';
   const data = await api(path, 300);
@@ -193,7 +188,6 @@ async function renderNews(cat) {
   }).join('');
 }
 
-// ── SAVE ARTICLE ──────────────────────────────────────────────────
 function toggleSave(id, btn) {
   const idx = State.savedArticles.indexOf(id);
   if (idx === -1) { State.savedArticles.push(id); btn.innerHTML = '<i class="ti ti-bookmark"></i> saved'; }
@@ -201,7 +195,6 @@ function toggleSave(id, btn) {
   localStorage.setItem('markora_saved', JSON.stringify(State.savedArticles));
 }
 
-// ── SEARCH ────────────────────────────────────────────────────────
 function initSearch() {
   const input = document.querySelector('.search-box input');
   if (!input) return;
@@ -221,7 +214,6 @@ function initSearch() {
   });
 }
 
-// ── TABS ──────────────────────────────────────────────────────────
 function initTabs() {
   document.querySelectorAll('.mtab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -244,7 +236,6 @@ function loadTab(name) {
   if (name === 'commodities') renderCommodities();
 }
 
-// ── FILTERS ───────────────────────────────────────────────────────
 function initFilters() {
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -257,7 +248,6 @@ function initFilters() {
   });
 }
 
-// ── WATCHLIST ─────────────────────────────────────────────────────
 async function updateWatchlistPrices() {
   const [crypto, forex] = await Promise.all([api('/crypto', 30), api('/forex', 300)]);
   if (!crypto || !Array.isArray(crypto)) return;
@@ -286,38 +276,27 @@ async function updateWatchlistPrices() {
   }
 }
 
-// ── BINANCE WEBSOCKET — real-time crypto ─────────────────────────
 function initBinanceWS() {
-  const streams = [
-    'btcusdt','ethusdt','solusdt','bnbusdt','xrpusdt',
-    'avaxusdt','dogeusdt','suiusdt','renderusdt','tonusdt'
-  ].map(s => s + '@ticker').join('/');
-
+  const streams = ['btcusdt','ethusdt','solusdt','bnbusdt','xrpusdt','avaxusdt','dogeusdt','suiusdt','renderusdt','tonusdt'].map(s => s + '@ticker').join('/');
   const ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
-
   ws.onmessage = (event) => {
     try {
       const msg = JSON.parse(event.data);
       const d = msg.data;
       if (!d) return;
-
       const symbol = d.s.replace('USDT', '');
       const currentPrice = parseFloat(d.c);
       const change24h = parseFloat(d.P);
-
       const formatPrice = (val) => {
         if (val >= 1000) return '$' + val.toLocaleString('en-US', { maximumFractionDigits: 0 });
         if (val >= 1)    return '$' + val.toLocaleString('en-US', { maximumFractionDigits: 2 });
         return '$' + val.toFixed(4);
       };
-
       const formatChg = (pct) => {
         const arrow = pct > 0 ? '▲' : pct < 0 ? '▼' : '—';
         const cls = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
         return `<span class="${cls}">${arrow}${Math.abs(pct).toFixed(2)}%</span>`;
       };
-
-      // Update crypto grid card by data-symbol attribute
       const card = document.querySelector(`.mkt-card[data-symbol="${symbol}"]`);
       if (card) {
         const valEl = card.querySelector('.mkt-val');
@@ -330,8 +309,6 @@ function initBinanceWS() {
         }
         if (chgEl) chgEl.innerHTML = formatChg(change24h);
       }
-
-      // Update ticker bar
       document.querySelectorAll('#panel-crypto .ticker-item').forEach(item => {
         const nameEl = item.querySelector('.ticker-name');
         if (nameEl?.textContent.trim() === symbol) {
@@ -341,8 +318,6 @@ function initBinanceWS() {
           if (chgEl) chgEl.innerHTML = formatChg(change24h);
         }
       });
-
-      // Update watchlist
       document.querySelectorAll('.watch-item').forEach(item => {
         const nameEl = item.querySelector('.watch-name');
         if (!nameEl) return;
@@ -354,45 +329,84 @@ function initBinanceWS() {
           if (chgEl) chgEl.innerHTML = formatChg(change24h);
         }
       });
-
-      // Pulse the live dot on every tick
       const dot = document.querySelector('.live-dot');
-      if (dot) {
-        dot.style.transform = 'scale(1.5)';
-        setTimeout(() => dot.style.transform = '', 150);
-      }
+      if (dot) { dot.style.transform = 'scale(1.5)'; setTimeout(() => dot.style.transform = '', 150); }
     } catch(e) {}
   };
-
   ws.onclose = () => setTimeout(initBinanceWS, 3000);
   ws.onerror = () => ws.close();
 }
 
-// ── INIT ─────────────────────────────────────────────────────────
+function initForexWS() {
+  async function pollForex() {
+    try {
+      const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      const d = await res.json();
+      const r = d.rates;
+      const updates = [
+        { pair: 'USD/INR', rate: r.INR, decimals: 2 },
+        { pair: 'EUR/INR', rate: r.INR / r.EUR, decimals: 2 },
+        { pair: 'GBP/INR', rate: r.INR / r.GBP, decimals: 2 },
+        { pair: 'JPY/INR', rate: r.INR / r.JPY, decimals: 2 },
+        { pair: 'AED/INR', rate: r.INR / r.AED, decimals: 2 },
+        { pair: 'EUR/USD', rate: 1 / r.EUR, decimals: 4 },
+        { pair: 'GBP/USD', rate: 1 / r.GBP, decimals: 4 },
+        { pair: 'USD/JPY', rate: r.JPY, decimals: 2 },
+        { pair: 'AUD/USD', rate: 1 / r.AUD, decimals: 4 },
+        { pair: 'USD/CNY', rate: r.CNY, decimals: 4 },
+        { pair: 'USD/SGD', rate: r.SGD, decimals: 4 },
+      ];
+      const panel = document.getElementById('panel-forex');
+      if (!panel) return;
+      panel.querySelectorAll('.row-item').forEach(row => {
+        const nameEl = row.querySelector('.row-name');
+        if (!nameEl) return;
+        const update = updates.find(u => u.pair === nameEl.textContent.trim());
+        if (!update) return;
+        const valEl = row.querySelector('.row-val');
+        if (valEl) {
+          const newRate = update.rate.toFixed(update.decimals);
+          if (valEl.textContent !== newRate) {
+            valEl.textContent = newRate;
+            valEl.style.transition = 'color 0.3s';
+            valEl.style.color = 'var(--accent)';
+            setTimeout(() => valEl.style.color = '', 600);
+          }
+        }
+      });
+      panel.querySelectorAll('.ticker-item').forEach(item => {
+        const nameEl = item.querySelector('.ticker-name');
+        if (!nameEl) return;
+        const update = updates.find(u => u.pair === nameEl.textContent.trim());
+        if (!update) return;
+        const valEl = item.querySelector('.ticker-val');
+        if (valEl) valEl.textContent = update.rate.toFixed(update.decimals);
+      });
+      document.querySelectorAll('.watch-item').forEach(item => {
+        if (item.querySelector('.watch-name')?.textContent.includes('USD/INR')) {
+          const valEl = item.querySelector('.watch-val');
+          if (valEl) valEl.textContent = r.INR.toFixed(2);
+        }
+      });
+    } catch(e) {}
+  }
+  pollForex();
+  setInterval(pollForex, 10000);
+}
+
 async function initMarkora() {
   initTabs();
   initFilters();
   initSearch();
-
-  await Promise.all([
-    renderEquities(),
-    renderCrypto(),
-    renderForex(),
-    renderCommodities(),
-    renderNews(),
-  ]);
-
+  await Promise.all([renderEquities(), renderCrypto(), renderForex(), renderCommodities(), renderNews()]);
   await updateWatchlistPrices();
-
-  // Polling fallbacks
-  setInterval(renderCrypto,          30000);
-  setInterval(renderEquities,        60000);
-  setInterval(renderForex,          300000);
-  setInterval(renderNews,           300000);
+  setInterval(renderCrypto, 30000);
+  setInterval(renderEquities, 60000);
+  setInterval(renderForex, 300000);
+  setInterval(renderNews, 300000);
   setInterval(updateWatchlistPrices, 30000);
-
-  // Real-time WebSocket for crypto
   initBinanceWS();
+  initForexWS();
 }
 
 document.addEventListener('DOMContentLoaded', initMarkora);
