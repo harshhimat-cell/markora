@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markora — Real intelligence. No noise.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.31.0/webfont/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #0a0a0b;
+  --bg2: #111113;
+  --bg3: #1a1a1d;
+  --bg4: #222226;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text1: #f0f0f0;
+  --text2: #9a9a9f;
+  --text3: #555559;
+  --accent: #00e5a0;
+  --accent2: #00b880;
+  --accent-dim: rgba(0,229,160,0.1);
+  --red: #ff5a5a;
+  --red-dim: rgba(255,90,90,0.12);
+  --amber: #f5a623;
+  --blue: #4a9eff;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+[data-theme="light"] {
+  --bg: #f5f5f2;
+  --bg2: #ffffff;
+  --bg3: #ececea;
+  --bg4: #e2e2df;
+  --border: rgba(0,0,0,0.07);
+  --border2: rgba(0,0,0,0.12);
+  --text1: #111111;
+  --text2: #555558;
+  --text3: #aaaaad;
+  --accent: #008f64;
+  --accent2: #006e4d;
+  --accent-dim: rgba(0,143,100,0.08);
+  --red: #d93025;
+  --red-dim: rgba(217,48,37,0.08);
+  --amber: #c47c0a;
+  --blue: #1a73e8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text1);font-family:var(--font-body);font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:52px;}
+.nav-logo{font-family:var(--font-display);font-weight:800;font-size:20px;color:var(--text1);letter-spacing:-0.5px;cursor:pointer;}
+.nav-logo span{color:var(--accent);}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.nav-btn{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all 0.15s;font-size:16px;}
+.nav-btn:hover{background:var(--bg3);color:var(--text1);}
+.live-pill{display:flex;align-items:center;gap:5px;background:var(--accent-dim);border:0.5px solid rgba(0,229,160,0.2);color:var(--accent);font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.85);}}
+
+/* LAYOUT */
+.shell{display:grid;grid-template-columns:220px 1fr 300px;min-height:calc(100vh - 52px);}
+
+/* SIDEBAR */
+.sidebar{border-right:0.5px solid var(--border);padding:1rem 0;position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto;}
+.sidebar-section{margin-bottom:1.5rem;}
+.sidebar-label{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;padding:0 1rem;margin-bottom:6px;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:7px 1rem;cursor:pointer;color:var(--text2);font-size:13px;font-weight:400;transition:all 0.12s;border-left:2px solid transparent;}
+.sidebar-item:hover{color:var(--text1);background:var(--bg2);}
+.sidebar-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent);}
+.sidebar-item i{font-size:16px;flex-shrink:0;}
+.sidebar-item .badge-count{margin-left:auto;background:var(--accent);color:#000;font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;}
+
+/* MAIN FEED */
+.main{border-right:0.5px solid var(--border);overflow-y:auto;}
+
+/* MARKET TABS */
+.market-tabs{display:flex;overflow-x:auto;padding:0 1rem;border-bottom:0.5px solid var(--border);gap:0;scrollbar-width:none;background:var(--bg2);}
+.market-tabs::-webkit-scrollbar{display:none;}
+.mtab{font-size:12px;font-weight:500;padding:10px 14px;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-0.5px;white-space:nowrap;transition:all 0.15s;flex-shrink:0;}
+.mtab:hover{color:var(--text2);}
+.mtab.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* TICKER BAR */
+.ticker-bar{display:flex;overflow-x:auto;gap:1px;padding:0;scrollbar-width:none;background:var(--bg2);border-bottom:0.5px solid var(--border);}
+.ticker-bar::-webkit-scrollbar{display:none;}
+.ticker-item{display:flex;align-items:center;gap:8px;padding:8px 14px;flex-shrink:0;cursor:pointer;transition:background 0.12s;border-right:0.5px solid var(--border);}
+.ticker-item:hover{background:var(--bg3);}
+.ticker-name{font-size:11px;color:var(--text3);font-weight:500;}
+.ticker-val{font-size:13px;font-weight:500;color:var(--text1);font-variant-numeric:tabular-nums;}
+.ticker-chg{font-size:11px;font-weight:500;}
+.up{color:var(--accent);}
+.down{color:var(--red);}
+.flat{color:var(--text3);}
+
+/* PANELS */
+.panel-content{display:none;padding:0;}
+.panel-content.active{display:block;}
+
+/* FEED */
+.feed-header{display:flex;align-items:center;justify-content:space-between;padding:12px 1rem;border-bottom:0.5px solid var(--border);}
+.feed-title{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text1);}
+.feed-filters{display:flex;gap:6px;}
+.filter-btn{font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all 0.12s;}
+.filter-btn:hover,.filter-btn.active{background:var(--accent-dim);border-color:rgba(0,229,160,0.3);color:var(--accent);}
+
+/* CARDS */
+.card{padding:1rem;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background 0.1s;}
+.card:hover{background:var(--bg2);}
+.card-meta{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;}
+.tag-green{background:rgba(0,229,160,0.1);color:var(--accent);}
+.tag-blue{background:rgba(74,158,255,0.1);color:var(--blue);}
+.tag-amber{background:rgba(245,166,35,0.1);color:var(--amber);}
+.tag-red{background:rgba(255,90,90,0.1);color:var(--red);}
+.tag-purple{background:rgba(150,100,255,0.1);color:#9664ff;}
+.tag-gray{background:var(--bg3);color:var(--text2);}
+.card-time{font-size:11px;color:var(--text3);}
+.verified-icon{color:var(--accent);font-size:13px;}
+.card-title{font-family:var(--font-display);font-size:15px;font-weight:600;line-height:1.35;color:var(--text1);margin-bottom:6px;}
+.card-body{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px;}
+.ai-box{background:var(--bg3);border-radius:var(--radius);padding:10px 12px;margin:8px 0;border:0.5px solid var(--border2);}
+.ai-lbl{font-size:10px;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:flex;align-items:center;gap:4px;}
+.ai-txt{font-size:12px;color:var(--text2);line-height:1.6;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+.card-actions{display:flex;gap:14px;}
+.action-btn{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text3);background:none;border:none;cursor:pointer;transition:color 0.12s;padding:0;}
+.action-btn:hover{color:var(--accent);}
+.action-btn i{font-size:15px;}
+.read-more{font-size:12px;color:var(--accent);font-weight:500;cursor:pointer;}
+.breaking-card{border-left:2px solid var(--red);background:rgba(255,90,90,0.03);}
+.breaking-lbl{font-size:10px;font-weight:700;color:var(--red);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+
+/* MARKET GRID */
+.mkt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;padding:1rem;}
+.mkt-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;cursor:pointer;transition:all 0.12s;}
+.mkt-card:hover{border-color:var(--border2);background:var(--bg3);}
+.mkt-name{font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:500;}
+.mkt-val{font-size:17px;font-weight:500;color:var(--text1);margin-bottom:2px;font-variant-numeric:tabular-nums;}
+.mkt-chg{font-size:12px;font-weight:500;}
+
+/* HEATMAP */
+.heatmap{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 1rem 1rem;}
+.heat-cell{border-radius:var(--radius);padding:10px 8px;text-align:center;cursor:pointer;transition:opacity 0.12s;}
+.heat-cell:hover{opacity:0.85;}
+.heat-name{font-size:10px;font-weight:500;margin-bottom:3px;}
+.heat-val{font-size:12px;font-weight:600;}
+.h-up3{background:rgba(0,229,160,0.25);}.h-up3 .heat-name{color:rgba(0,229,160,0.7);}.h-up3 .heat-val{color:var(--accent);}
+.h-up2{background:rgba(0,229,160,0.15);}.h-up2 .heat-name{color:rgba(0,229,160,0.6);}.h-up2 .heat-val{color:var(--accent);}
+.h-up1{background:rgba(0,229,160,0.08);}.h-up1 .heat-name{color:rgba(0,229,160,0.5);}.h-up1 .heat-val{color:var(--accent);}
+.h-flat{background:var(--bg3);}.h-flat .heat-name{color:var(--text3);}.h-flat .heat-val{color:var(--text2);}
+.h-dn1{background:rgba(255,90,90,0.08);}.h-dn1 .heat-name{color:rgba(255,90,90,0.5);}.h-dn1 .heat-val{color:var(--red);}
+.h-dn2{background:rgba(255,90,90,0.15);}.h-dn2 .heat-name{color:rgba(255,90,90,0.6);}.h-dn2 .heat-val{color:var(--red);}
+.h-dn3{background:rgba(255,90,90,0.25);}.h-dn3 .heat-name{color:rgba(255,90,90,0.7);}.h-dn3 .heat-val{color:var(--red);}
+
+/* ROW LIST */
+.row-list{display:flex;flex-direction:column;}
+.row-item{display:flex;align-items:center;justify-content:space-between;padding:10px 1rem;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background 0.1s;}
+.row-item:hover{background:var(--bg2);}
+.row-left{display:flex;flex-direction:column;gap:2px;}
+.row-name{font-size:13px;font-weight:500;color:var(--text1);}
+.row-sub{font-size:11px;color:var(--text3);}
+.row-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+.row-val{font-size:13px;font-weight:500;color:var(--text1);font-variant-numeric:tabular-nums;}
+.row-chg{font-size:11px;font-weight:500;}
+
+/* DEAL CARD */
+.deal-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;margin:0 1rem 8px;}
+.deal-top{display:flex;justify-content:space-between;margin-bottom:8px;}
+.deal-name{font-size:13px;font-weight:500;color:var(--text1);}
+.deal-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.deal-amt{font-size:16px;font-weight:600;color:var(--text1);}
+.deal-meta{display:flex;gap:5px;flex-wrap:wrap;}
+
+/* SECTION LABEL */
+.sec-lbl{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;padding:10px 1rem 6px;}
+
+/* PANEL AI BOX */
+.panel-ai{margin:0 1rem 1rem;background:var(--bg3);border-radius:var(--radius);padding:12px 14px;border:0.5px solid var(--border2);}
+
+/* RIGHT PANEL */
+.right-panel{padding:1rem;position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto;}
+.rp-section{margin-bottom:1.5rem;}
+.rp-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text1);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+
+/* SEARCH */
+.search-box{display:flex;align-items:center;gap:8px;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 12px;margin-bottom:1rem;transition:border-color 0.15s;}
+.search-box:focus-within{border-color:var(--accent);}
+.search-box i{font-size:15px;color:var(--text3);}
+.search-box input{background:none;border:none;outline:none;color:var(--text1);font-size:13px;font-family:var(--font-body);width:100%;}
+.search-box input::placeholder{color:var(--text3);}
+
+/* TRENDING */
+.trend-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;transition:opacity 0.12s;}
+.trend-item:hover{opacity:0.8;}
+.trend-num{font-size:12px;color:var(--text3);font-weight:500;width:16px;flex-shrink:0;}
+.trend-text{font-size:13px;color:var(--text1);font-weight:400;}
+.trend-tag{margin-left:auto;}
+
+/* WATCHLIST */
+.watch-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);}
+.watch-name{font-size:13px;color:var(--text1);font-weight:500;}
+.watch-right{text-align:right;}
+.watch-val{font-size:13px;font-weight:500;color:var(--text1);}
+.watch-chg{font-size:11px;font-weight:500;}
+
+/* MINI SPARKLINE */
+.sparkline{width:60px;height:24px;}
+
+/* UPDATE TIME */
+.update-time{font-size:10px;color:var(--text3);padding:4px 1rem 8px;text-align:right;}
+
+/* ANIMATIONS */
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.card{animation:fadeIn 0.3s ease both;}
+.card:nth-child(1){animation-delay:0.0s;}
+.card:nth-child(2){animation-delay:0.05s;}
+.card:nth-child(3){animation-delay:0.1s;}
+.card:nth-child(4){animation-delay:0.15s;}
+.card:nth-child(5){animation-delay:0.2s;}
+
+/* MOBILE */
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr;}
+  .sidebar,.right-panel{display:none;}
+  .main{border:none;}
+}
+@media(max-width:600px){
+  nav{padding:0 1rem;}
+  .market-tabs{padding:0 0.5rem;}
+}
+
+/* SCROLLTOP */
+.scrolltop{position:fixed;bottom:1.5rem;right:1.5rem;width:36px;height:36px;border-radius:50%;background:var(--accent);color:#000;border:none;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:18px;transition:opacity 0.2s;z-index:50;}
+.scrolltop.show{display:flex;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="scrollTo(0,0)">mark<span>ora</span></div>
+  <div class="nav-right">
+    <div class="live-pill"><div class="live-dot"></div>live</div>
+    <button class="nav-btn" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme"><i class="ti ti-sun"></i></button>
+    <button class="nav-btn" title="Search" aria-label="Search"><i class="ti ti-search"></i></button>
+    <button class="nav-btn" title="Notifications" aria-label="Notifications"><i class="ti ti-bell"></i></button>
+    <button class="nav-btn" title="Profile" aria-label="Profile"><i class="ti ti-user-circle"></i></button>
+  </div>
+</nav>
+
+<div class="shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">feed</div>
+    <div class="sidebar-item active" onclick="setFeedFilter('foryou',this)"><i class="ti ti-sparkles"></i> For you</div>
+    <div class="sidebar-item" onclick="setFeedFilter('breaking',this)"><i class="ti ti-bolt"></i> Breaking <span class="badge-count">3</span></div>
+    <div class="sidebar-item" onclick="setFeedFilter('saved',this)"><i class="ti ti-bookmark"></i> Saved</div>
+    <div class="sidebar-item" onclick="setFeedFilter('following',this)"><i class="ti ti-users"></i> Following</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">markets</div>
+    <div class="sidebar-item" onclick="switchTab('equities',this)"><i class="ti ti-chart-candle"></i> Equities</div>
+    <div class="sidebar-item" onclick="switchTab('global',this)"><i class="ti ti-world"></i> Global</div>
+    <div class="sidebar-item" onclick="switchTab('crypto',this)"><i class="ti ti-currency-bitcoin"></i> Crypto</div>
+    <div class="sidebar-item" onclick="switchTab('commodities',this)"><i class="ti ti-gold"></i> Commodities</div>
+    <div class="sidebar-item" onclick="switchTab('forex',this)"><i class="ti ti-arrows-exchange"></i> Forex</div>
+    <div class="sidebar-item" onclick="switchTab('fixed',this)"><i class="ti ti-receipt"></i> Fixed income</div>
+    <div class="sidebar-item" onclick="switchTab('realestate',this)"><i class="ti ti-building"></i> Real estate</div>
+    <div class="sidebar-item" onclick="switchTab('syndication',this)"><i class="ti ti-network"></i> Loan syndication</div>
+    <div class="sidebar-item" onclick="switchTab('private',this)"><i class="ti ti-lock"></i> Private markets</div>
+    <div class="sidebar-item" onclick="switchTab('derivatives',this)"><i class="ti ti-trending-up"></i> Derivatives</div>
+    <div class="sidebar-item" onclick="switchTab('etfs',this)"><i class="ti ti-chart-pie"></i> ETFs &amp; MFs</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">learn</div>
+    <div class="sidebar-item"><i class="ti ti-school"></i> Courses</div>
+    <div class="sidebar-item"><i class="ti ti-video"></i> Videos</div>
+    <div class="sidebar-item"><i class="ti ti-article"></i> Explainers</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main" id="main-content">
+
+  <!-- MARKET TABS -->
+  <div class="market-tabs" id="market-tabs">
+    <div class="mtab active" data-tab="equities">Equities</div>
+    <div class="mtab" data-tab="global">Global</div>
+    <div class="mtab" data-tab="crypto">Crypto</div>
+    <div class="mtab" data-tab="commodities">Commodities</div>
+    <div class="mtab" data-tab="forex">Forex</div>
+    <div class="mtab" data-tab="fixed">Fixed income</div>
+    <div class="mtab" data-tab="realestate">Real estate</div>
+    <div class="mtab" data-tab="syndication">Loan syndication</div>
+    <div class="mtab" data-tab="private">Private markets</div>
+    <div class="mtab" data-tab="derivatives">Derivatives</div>
+    <div class="mtab" data-tab="etfs">ETFs &amp; MFs</div>
+  </div>
+
+  <!-- EQUITIES -->
+  <div class="panel-content active" id="panel-equities">
+    <div class="ticker-bar">
+      <div class="ticker-item"><div class="ticker-name">SENSEX</div><div class="ticker-val">81,247</div><div class="ticker-chg up">▲0.42%</div></div>
+      <div class="ticker-item"><div class="ticker-name">NIFTY 50</div><div class="ticker-val">24,633</div><div class="ticker-chg up">▲0.38%</div></div>
+      <div class="ticker-item"><div class="ticker-name">NIFTY BANK</div><div class="ticker-val">52,180</div><div class="ticker-chg down">▼0.11%</div></div>
+      <div class="ticker-item"><div class="ticker-name">NIFTY IT</div><div class="ticker-val">38,940</div><div class="ticker-chg up">▲1.24%</div></div>
+      <div class="ticker-item"><div class="ticker-name">NIFTY MID</div><div class="ticker-val">51,820</div><div class="ticker-chg up">▲0.61%</div></div>
+      <div class="ticker-item"><div class="ticker-name">NIFTY SMALL</div><div class="ticker-val">18,440</div><div class="ticker-chg up">▲0.88%</div></div>
+    </div>
+    <div class="sec-lbl">sectoral heatmap</div>
+    <div class="heatmap">
+      <div class="heat-cell h-up3"><div class="heat-name">IT</div><div class="heat-val">+1.24%</div></div>
+      <div class="heat-cell h-up2"><div class="heat-name">Auto</div><div class="heat-val">+0.87%</div></div>
+      <div class="heat-cell h-up2"><div class="heat-name">FMCG</div><div class="heat-val">+0.71%</div></div>
+      <div class="heat-cell h-up1"><div class="heat-name">Pharma</div><div class="heat-val">+0.39%</div></div>
+      <div class="heat-cell h-up1"><div class="heat-name">Infra</div><div class="heat-val">+0.22%</div></div>
+      <div class="heat-cell h-flat"><div class="heat-name">Metal</div><div class="heat-val">+0.02%</div></div>
+      <div class="heat-cell h-dn1"><div class="heat-name">Bank</div><div class="heat-val">-0.11%</div></div>
+      <div class="heat-cell h-dn1"><div class="heat-name">Realty</div><div class="heat-val">-0.31%</div></div>
+      <div class="heat-cell h-dn2"><div class="heat-name">PSU Bank</div><div class="heat-val">-0.54%</div></div>
+      <div class="heat-cell h-dn2"><div class="heat-name">Energy</div><div class="heat-val">-0.68%</div></div>
+      <div class="heat-cell h-dn3"><div class="heat-name">Media</div><div class="heat-val">-1.12%</div></div>
+      <div class="heat-cell h-up1"><div class="heat-name">Consumer</div><div class="heat-val">+0.44%</div></div>
+    </div>
+    <div class="sec-lbl">top movers</div>
+    <div class="row-list">
+      <div class="row-item"><div class="row-left"><div class="row-name">Infosys</div><div class="row-sub">NSE: INFY</div></div><div class="row-right"><div class="row-val">₹1,842</div><div class="row-chg up">▲2.14%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">TCS</div><div class="row-sub">NSE: TCS</div></div><div class="row-right"><div class="row-val">₹3,621</div><div class="row-chg up">▲1.88%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Reliance</div><div class="row-sub">NSE: RELIANCE</div></div><div class="row-right"><div class="row-val">₹2,914</div><div class="row-chg up">▲0.44%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">HDFC Bank</div><div class="row-sub">NSE: HDFCBANK</div></div><div class="row-right"><div class="row-val">₹1,712</div><div class="row-chg down">▼0.32%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Adani Ent</div><div class="row-sub">NSE: ADANIENT</div></div><div class="row-right"><div class="row-val">₹2,441</div><div class="row-chg down">▼0.87%</div></div></div>
+    </div>
+    <div class="panel-ai"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai read</div><div class="ai-txt">IT sector leading on strong dollar and Infosys guidance upgrade. Banks under mild pressure ahead of RBI credit policy minutes due Thursday. Mid and small caps outperforming large caps for 3rd consecutive session.</div></div>
+    <div class="update-time">updated 12:18 PM IST · May 25, 2026</div>
+  </div>
+
+  <!-- GLOBAL -->
+  <div class="panel-content" id="panel-global">
+    <div class="ticker-bar">
+      <div class="ticker-item"><div class="ticker-name">S&amp;P 500</div><div class="ticker-val">5,304</div><div class="ticker-chg up">▲0.61%</div></div>
+      <div class="ticker-item"><div class="ticker-name">NASDAQ</div><div class="ticker-val">18,671</div><div class="ticker-chg up">▲0.94%</div></div>
+      <div class="ticker-item"><div class="ticker-name">DOW</div><div class="ticker-val">39,142</div><div class="ticker-chg up">▲0.28%</div></div>
+      <div class="ticker-item"><div class="ticker-name">FTSE 100</div><div class="ticker-val">8,412</div><div class="ticker-chg down">▼0.22%</div></div>
+      <div class="ticker-item"><div class="ticker-name">DAX</div><div class="ticker-val">18,920</div><div class="ticker-chg up">▲0.17%</div></div>
+      <div class="ticker-item"><div class="ticker-name">NIKKEI</div><div class="ticker-val">38,560</div><div class="ticker-chg up">▲0.33%</div></div>
+    </div>
+    <div class="mkt-grid">
+      <div class="mkt-card"><div class="mkt-name">S&amp;P 500</div><div class="mkt-val">5,304</div><div class="mkt-chg up">▲0.61%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Nasdaq</div><div class="mkt-val">18,671</div><div class="mkt-chg up">▲0.94%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Dow Jones</div><div class="mkt-val">39,142</div><div class="mkt-chg up">▲0.28%</div></div>
+      <div class="mkt-card"><div class="mkt-name">FTSE 100</div><div class="mkt-val">8,412</div><div class="mkt-chg down">▼0.22%</div></div>
+      <div class="mkt-card"><div class="mkt-name">DAX</div><div class="mkt-val">18,920</div><div class="mkt-chg up">▲0.17%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Nikkei 225</div><div class="mkt-val">38,560</div><div class="mkt-chg up">▲0.33%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Hang Seng</div><div class="mkt-val">18,204</div><div class="mkt-chg down">▼0.55%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Shanghai</div><div class="mkt-val">3,141</div><div class="mkt-chg flat">—0.00%</div></div>
+      <div class="mkt-card"><div class="mkt-name">CAC 40</div><div class="mkt-val">8,033</div><div class="mkt-chg down">▼0.08%</div></div>
+      <div class="mkt-card"><div class="mkt-name">ASX 200</div><div class="mkt-val">7,824</div><div class="mkt-chg up">▲0.41%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Kospi</div><div class="mkt-val">2,614</div><div class="mkt-chg up">▲0.19%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Bovespa</div><div class="mkt-val">127,840</div><div class="mkt-chg down">▼0.33%</div></div>
+    </div>
+    <div class="panel-ai"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai read</div><div class="ai-txt">US equities leading on cooling inflation data. Europe mixed on energy uncertainty. Asia diverging — Japan steady, Hong Kong soft on China property overhang. Emerging markets broadly flat.</div></div>
+  </div>
+
+  <!-- CRYPTO -->
+  <div class="panel-content" id="panel-crypto">
+    <div class="ticker-bar">
+      <div class="ticker-item"><div class="ticker-name">BTC</div><div class="ticker-val">$103,240</div><div class="ticker-chg up">▲2.14%</div></div>
+      <div class="ticker-item"><div class="ticker-name">ETH</div><div class="ticker-val">$3,812</div><div class="ticker-chg up">▲3.41%</div></div>
+      <div class="ticker-item"><div class="ticker-name">SOL</div><div class="ticker-val">$182</div><div class="ticker-chg up">▲4.80%</div></div>
+      <div class="ticker-item"><div class="ticker-name">BNB</div><div class="ticker-val">$611</div><div class="ticker-chg down">▼0.33%</div></div>
+      <div class="ticker-item"><div class="ticker-name">TOTAL MCAP</div><div class="ticker-val">$3.41T</div><div class="ticker-chg up">▲1.82%</div></div>
+    </div>
+    <div class="mkt-grid">
+      <div class="mkt-card"><div class="mkt-name">Bitcoin</div><div class="mkt-val">$103,240</div><div class="mkt-chg up">▲2.14%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Ethereum</div><div class="mkt-val">$3,812</div><div class="mkt-chg up">▲3.41%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Solana</div><div class="mkt-val">$182</div><div class="mkt-chg up">▲4.80%</div></div>
+      <div class="mkt-card"><div class="mkt-name">BNB</div><div class="mkt-val">$611</div><div class="mkt-chg down">▼0.33%</div></div>
+      <div class="mkt-card"><div class="mkt-name">XRP</div><div class="mkt-val">$0.614</div><div class="mkt-chg up">▲1.22%</div></div>
+      <div class="mkt-card"><div class="mkt-name">AVAX</div><div class="mkt-val">$38.40</div><div class="mkt-chg up">▲2.88%</div></div>
+      <div class="mkt-card"><div class="mkt-name">DOGE</div><div class="mkt-val">$0.172</div><div class="mkt-chg flat">—0.04%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Sui</div><div class="mkt-val">$4.21</div><div class="mkt-chg up">▲14.2%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Render</div><div class="mkt-val">$8.74</div><div class="mkt-chg up">▲9.8%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Hyperliquid</div><div class="mkt-val">$28.40</div><div class="mkt-chg up">▲6.3%</div></div>
+      <div class="mkt-card"><div class="mkt-name">TON</div><div class="mkt-val">$6.82</div><div class="mkt-chg down">▼1.44%</div></div>
+      <div class="mkt-card"><div class="mkt-name">PENGU</div><div class="mkt-val">$0.042</div><div class="mkt-chg down">▼7.1%</div></div>
+    </div>
+    <div class="panel-ai"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai read</div><div class="ai-txt">BTC above $100k for 4th day. ETH rallying on ETF inflow momentum. SOL benefiting from Firedancer upgrade expectations. Meme coins cooling after last week's surge. Fear &amp; Greed at 72 — Greed.</div></div>
+  </div>
+
+  <!-- COMMODITIES -->
+  <div class="panel-content" id="panel-commodities">
+    <div class="ticker-bar">
+      <div class="ticker-item"><div class="ticker-name">GOLD</div><div class="ticker-val">$3,284</div><div class="ticker-chg up">▲0.72%</div></div>
+      <div class="ticker-item"><div class="ticker-name">SILVER</div><div class="ticker-val">$32.40</div><div class="ticker-chg up">▲1.10%</div></div>
+      <div class="ticker-item"><div class="ticker-name">BRENT</div><div class="ticker-val">$74.18</div><div class="ticker-chg down">▼0.88%</div></div>
+      <div class="ticker-item"><div class="ticker-name">WTI</div><div class="ticker-val">$70.41</div><div class="ticker-chg down">▼0.94%</div></div>
+      <div class="ticker-item"><div class="ticker-name">NAT GAS</div><div class="ticker-val">$3.12</div><div class="ticker-chg flat">—0.03%</div></div>
+    </div>
+    <div class="mkt-grid">
+      <div class="mkt-card"><div class="mkt-name">Gold ($/oz)</div><div class="mkt-val">$3,284</div><div class="mkt-chg up">▲0.72%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Silver ($/oz)</div><div class="mkt-val">$32.40</div><div class="mkt-chg up">▲1.10%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Platinum</div><div class="mkt-val">$1,042</div><div class="mkt-chg up">▲0.33%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Palladium</div><div class="mkt-val">$984</div><div class="mkt-chg down">▼0.21%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Brent ($/bbl)</div><div class="mkt-val">$74.18</div><div class="mkt-chg down">▼0.88%</div></div>
+      <div class="mkt-card"><div class="mkt-name">WTI ($/bbl)</div><div class="mkt-val">$70.41</div><div class="mkt-chg down">▼0.94%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Nat Gas</div><div class="mkt-val">$3.12</div><div class="mkt-chg flat">—0.03%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Copper</div><div class="mkt-val">$4.61</div><div class="mkt-chg up">▲0.44%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Wheat</div><div class="mkt-val">$541</div><div class="mkt-chg down">▼0.62%</div></div>
+      <div class="mkt-card"><div class="mkt-name">Corn</div><div class="mkt-val">$428</div><div class="mkt-chg down">▼0.18%</div></div>
+      <div class="mkt-card"><div class="mkt-name">MCX Gold ₹</div><div class="mkt-val">₹92,410</div><div class="mkt-chg up">▲0.51%</div></div>
+      <div class="mkt-card"><div class="mkt-name">MCX Silver ₹</div><div class="mkt-val">₹1,04,820</div><div class="mkt-chg up">▲0.88%</div></div>
+    </div>
+    <div class="panel-ai"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai read</div><div class="ai-txt">Gold near all-time highs on safe-haven demand and dollar softness. Oil under pressure from OPEC+ supply signals. Copper strong on China stimulus expectations. MCX gold in rupees at record highs too.</div></div>
+  </div>
+
+  <!-- FOREX -->
+  <div class="panel-content" id="panel-forex">
+    <div class="ticker-bar">
+      <div class="ticker-item"><div class="ticker-name">USD/INR</div><div class="ticker-val">84.32</div><div class="ticker-chg down">▼0.18%</div></div>
+      <div class="ticker-item"><div class="ticker-name">EUR/USD</div><div class="ticker-val">1.0882</div><div class="ticker-chg up">▲0.29%</div></div>
+      <div class="ticker-item"><div class="ticker-name">DXY</div><div class="ticker-val">100.42</div><div class="ticker-chg down">▼0.31%</div></div>
+      <div class="ticker-item"><div class="ticker-name">USD/JPY</div><div class="ticker-val">156.82</div><div class="ticker-chg down">▼0.41%</div></div>
+    </div>
+    <div class="sec-lbl">INR pairs</div>
+    <div class="row-list">
+      <div class="row-item"><div class="row-left"><div class="row-name">USD/INR</div><div class="row-sub">Dollar / Rupee</div></div><div class="row-right"><div class="row-val">84.32</div><div class="row-chg down">▼0.18%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">EUR/INR</div><div class="row-sub">Euro / Rupee</div></div><div class="row-right"><div class="row-val">91.74</div><div class="row-chg up">▲0.22%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">GBP/INR</div><div class="row-sub">Pound / Rupee</div></div><div class="row-right"><div class="row-val">107.20</div><div class="row-chg up">▲0.14%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">JPY/INR</div><div class="row-sub">Yen / Rupee</div></div><div class="row-right"><div class="row-val">0.538</div><div class="row-chg up">▲0.31%</div></div></div>
+    </div>
+    <div class="sec-lbl">major pairs</div>
+    <div class="row-list">
+      <div class="row-item"><div class="row-left"><div class="row-name">EUR/USD</div></div><div class="row-right"><div class="row-val">1.0882</div><div class="row-chg up">▲0.29%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">GBP/USD</div></div><div class="row-right"><div class="row-val">1.2714</div><div class="row-chg up">▲0.19%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">USD/JPY</div></div><div class="row-right"><div class="row-val">156.82</div><div class="row-chg down">▼0.41%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">AUD/USD</div></div><div class="row-right"><div class="row-val">0.6441</div><div class="row-chg up">▲0.12%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">USD/CNY</div></div><div class="row-right"><div class="row-val">7.2410</div><div class="row-chg flat">—0.01%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">DXY Index</div></div><div class="row-right"><div class="row-val">100.42</div><div class="row-chg down">▼0.31%</div></div></div>
+    </div>
+    <div class="panel-ai"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai read</div><div class="ai-txt">Rupee strengthening mildly on FII inflows. Dollar index soft after weaker US PMI print. Yen volatile ahead of BOJ policy decision next week. Euro benefiting from better-than-expected eurozone PMI.</div></div>
+  </div>
+
+  <!-- FIXED INCOME -->
+  <div class="panel-content" id="panel-fixed">
+    <div class="ticker-bar">
+      <div class="ticker-item"><div class="ticker-name">RBI REPO</div><div class="ticker-val">6.50%</div><div class="ticker-chg flat">unchanged</div></div>
+      <div class="ticker-item"><div class="ticker-name">10Y G-SEC</div><div class="ticker-val">7.08%</div><div class="ticker-chg down">▼2bps</div></div>
+      <div class="ticker-item"><div class="ticker-name">US 10Y</div><div class="ticker-val">4.42%</div><div class="ticker-chg up">▲3bps</div></div>
+      <div class="ticker-item"><div class="ticker-name">US 2Y</div><div class="ticker-val">4.81%</div><div class="ticker-chg up">▲1bp</div></div>
+    </div>
+    <div class="sec-lbl">India yield curve</div>
+    <div class="row-list">
+      <div class="row-item"><div class="row-left"><div class="row-name">91-day T-Bill</div></div><div class="row-right"><div class="row-val">6.74%</div><div class="row-chg flat">stable</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">182-day T-Bill</div></div><div class="row-right"><div class="row-val">6.81%</div><div class="row-chg flat">stable</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">1Y G-Sec</div></div><div class="row-right"><div class="row-val">6.88%</div><div class="row-chg flat">stable</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">5Y G-Sec</div></div><div class="row-right"><div class="row-val">6.94%</div><div class="row-chg down">▼1bp</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">10Y G-Sec</div></div><div class="row-right"><div class="row-val">7.08%</div><div class="row-chg down">▼2bps</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">30Y G-Sec</div></div><div class="row-right"><div class="row-val">7.24%</div><div class="row-chg flat">stable</div></div></div>
+    </div>
+    <div class="sec-lbl">global rates</div>
+    <div class="row-list">
+      <div class="row-item"><div class="row-left"><div class="row-name">Fed Funds Rate</div></div><div class="row-right"><div class="row-val">5.25%</div><div class="row-chg flat">unchanged</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">ECB Rate</div></div><div class="row-right"><div class="row-val">4.00%</div><div class="row-chg flat">unchanged</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">BOE Rate</div></div><div class="row-right"><div class="row-val">5.00%</div><div class="row-chg flat">unchanged</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">BOJ Rate</div></div><div class="row-right"><div class="row-val">0.10%</div><div class="row-chg flat">unchanged</div></div></div>
+    </div>
+    <div class="panel-ai"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai read</div><div class="ai-txt">Yield curve steepening slightly. RBI hold keeps short-end anchored. Long bonds rallying on lower inflation expectations — rate cuts may come H2 2026. US yield curve still inverted signalling recession watch.</div></div>
+  </div>
+
+  <!-- REAL ESTATE -->
+  <div class="panel-content" id="panel-realestate">
+    <div class="ticker-bar">
+      <div class="ticker-item"><div class="ticker-name">MUMBAI</div><div class="ticker-val">₹32,400</div><div class="ticker-chg up">▲8.2% YoY</div></div>
+      <div class="ticker-item"><div class="ticker-name">DELHI NCR</div><div class="ticker-val">₹18,700</div><div class="ticker-chg up">▲11.4% YoY</div></div>
+      <div class="ticker-item"><div class="ticker-name">BENGALURU</div><div class="ticker-val">₹11,200</div><div class="ticker-chg up">▲14.1% YoY</div></div>
+    </div>
+    <div class="sec-lbl">city residential (₹/sqft)</div>
+    <div class="row-list">
+      <div class="row-item"><div class="row-left"><div class="row-name">Mumbai</div><div class="row-sub">South Mumbai avg</div></div><div class="row-right"><div class="row-val">₹32,400</div><div class="row-chg up">▲8.2% YoY</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Delhi NCR</div><div class="row-sub">Gurugram avg</div></div><div class="row-right"><div class="row-val">₹18,700</div><div class="row-chg up">▲11.4% YoY</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Bengaluru</div><div class="row-sub">Whitefield avg</div></div><div class="row-right"><div class="row-val">₹11,200</div><div class="row-chg up">▲14.1% YoY</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Hyderabad</div><div class="row-sub">HITEC City avg</div></div><div class="row-right"><div class="row-val">₹9,800</div><div class="row-chg up">▲12.6% YoY</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Pune</div><div class="row-sub">Hinjewadi avg</div></div><div class="row-right"><div class="row-val">₹8,200</div><div class="row-chg up">▲9.1% YoY</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Chennai</div><div class="row-sub">OMR avg</div></div><div class="row-right"><div class="row-val">₹7,100</div><div class="row-chg up">▲7.4% YoY</div></div></div>
+    </div>
+    <div class="sec-lbl">REITs</div>
+    <div class="row-list">
+      <div class="row-item"><div class="row-left"><div class="row-name">Embassy REIT</div><div class="row-sub">Office · Yield 6.8%</div></div><div class="row-right"><div class="row-val">₹371</div><div class="row-chg up">▲1.2%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Mindspace REIT</div><div class="row-sub">Office · Yield 6.4%</div></div><div class="row-right"><div class="row-val">₹342</div><div class="row-chg down">▼0.4%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Nexus Select</div><div class="row-sub">Retail · Yield 5.9%</div></div><div class="row-right"><div class="row-val">₹148</div><div class="row-chg up">▲0.8%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Brookfield REIT</div><div class="row-sub">Office · Yield 7.1%</div></div><div class="row-right"><div class="row-val">₹294</div><div class="row-chg flat">—0.0%</div></div></div>
+    </div>
+    <div class="panel-ai"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai read</div><div class="ai-txt">Bengaluru and Hyderabad leading residential price growth driven by tech sector hiring. Mumbai premium segment cooling slightly. REITs underperforming equities YTD but offering stable 6-7% distribution yields.</div></div>
+  </div>
+
+  <!-- LOAN SYNDICATION -->
+  <div class="panel-content" id="panel-syndication">
+    <div class="ticker-bar">
+      <div class="ticker-item"><div class="ticker-name">AAA SPREAD</div><div class="ticker-val">+42bps</div><div class="ticker-chg flat">over G-Sec</div></div>
+      <div class="ticker-item"><div class="ticker-name">AA SPREAD</div><div class="ticker-val">+78bps</div><div class="ticker-chg down">widened 4bps</div></div>
+      <div class="ticker-item"><div class="ticker-name">INFRA</div><div class="ticker-val">+95bps</div><div class="ticker-chg flat">stable</div></div>
+    </div>
+    <div class="sec-lbl">recent deals · India</div>
+    <div class="deal-card">
+      <div class="deal-top"><div><div class="deal-name">Adani Ports &amp; SEZ</div><div class="deal-sub">Term loan · 5 years · USD</div></div><div class="deal-amt">$1.2B</div></div>
+      <div class="deal-meta"><span class="tag tag-green">Signed</span><span class="tag tag-blue">SBI · Axis · HDFC</span><span class="tag tag-amber">SOFR+185bps</span></div>
+    </div>
+    <div class="deal-card">
+      <div class="deal-top"><div><div class="deal-name">Reliance Retail</div><div class="deal-sub">Revolving credit · 3 years · INR</div></div><div class="deal-amt">₹8,500 Cr</div></div>
+      <div class="deal-meta"><span class="tag tag-green">Closed</span><span class="tag tag-blue">6 banks</span><span class="tag tag-amber">MCLR+40bps</span></div>
+    </div>
+    <div class="deal-card">
+      <div class="deal-top"><div><div class="deal-name">GMR Airports</div><div class="deal-sub">Project finance · 15 years · INR</div></div><div class="deal-amt">₹4,200 Cr</div></div>
+      <div class="deal-meta"><span class="tag tag-red">Syndication open</span><span class="tag tag-blue">Lead: ICICI</span><span class="tag tag-amber">MCLR+65bps</span></div>
+    </div>
+    <div class="deal-card">
+      <div class="deal-top"><div><div class="deal-name">NTPC Green Energy</div><div class="deal-sub">Green bond · 10 years · USD</div></div><div class="deal-amt">$750M</div></div>
+      <div class="deal-meta"><span class="tag tag-red">Bookbuilding</span><span class="tag tag-blue">Barclays · Citi · JPM</span><span class="tag tag-green">ESG</span></div>
+    </div>
+    <div class="panel-ai"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai read</div><div class="ai-txt">Syndication market active with infra and conglomerate refinancing driving deal flow. AA spreads widening slightly on credit tightening expectations. Green bonds gaining traction — NTPC deal oversubscribed 2.4x.</div></div>
+  </div>
+
+  <!-- PRIVATE MARKETS -->
+  <div class="panel-content" id="panel-private">
+    <div class="ticker-bar">
+      <div class="ticker-item"><div class="ticker-name">INDIA VC (MAY)</div><div class="ticker-val">$1.4B</div><div class="ticker-chg up">▲22% MoM</div></div>
+      <div class="ticker-item"><div class="ticker-name">PE DEALS</div><div class="ticker-val">$3.1B</div><div class="ticker-chg up">▲8% MoM</div></div>
+      <div class="ticker-item"><div class="ticker-name">UNICORNS YTD</div><div class="ticker-val">7</div><div class="ticker-chg up">▲vs 4 last yr</div></div>
+    </div>
+    <div class="sec-lbl">recent rounds</div>
+    <div class="row-list">
+      <div class="row-item"><div class="row-left"><div class="row-name">Krutrim AI</div><div class="row-sub">Series B · AI infra</div></div><div class="row-right"><div class="row-val">$150M</div><div class="row-chg"><span class="tag tag-purple">AI</span></div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Perfios</div><div class="row-sub">Growth · Fintech</div></div><div class="row-right"><div class="row-val">$80M</div><div class="row-chg"><span class="tag tag-green">Fintech</span></div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Zetwerk</div><div class="row-sub">Series F · Manufacturing</div></div><div class="row-right"><div class="row-val">$120M</div><div class="row-chg"><span class="tag tag-amber">Mfg</span></div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Rapido</div><div class="row-sub">Series E · Mobility</div></div><div class="row-right"><div class="row-val">$200M</div><div class="row-chg"><span class="tag tag-blue">Mobility</span></div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Lenskart</div><div class="row-sub">Growth · D2C Retail</div></div><div class="row-right"><div class="row-val">$100M</div><div class="row-chg"><span class="tag tag-gray">Retail</span></div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">IndiGrid</div><div class="row-sub">PE · Infrastructure</div></div><div class="row-right"><div class="row-val">$250M</div><div class="row-chg"><span class="tag tag-amber">Infra</span></div></div></div>
+    </div>
+    <div class="panel-ai"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai read</div><div class="ai-txt">India VC back to momentum after Q1 slowdown. AI infra and fintech dominating deal flow. PE focused on profitable growth-stage ahead of anticipated IPO window H2 2026. Avg valuation multiples compressing vs 2021 peak.</div></div>
+  </div>
+
+  <!-- DERIVATIVES -->
+  <div class="panel-content" id="panel-derivatives">
+    <div class="ticker-bar">
+      <div class="ticker-item"><div class="ticker-name">INDIA VIX</div><div class="ticker-val">13.42</div><div class="ticker-chg down">▼4.1% calm</div></div>
+      <div class="ticker-item"><div class="ticker-name">NIFTY PCR</div><div class="ticker-val">1.24</div><div class="ticker-chg up">bullish</div></div>
+      <div class="ticker-item"><div class="ticker-name">MAX PAIN</div><div class="ticker-val">24,500</div><div class="ticker-chg flat">weekly</div></div>
+      <div class="ticker-item"><div class="ticker-name">OI CHANGE</div><div class="ticker-val">+4.2%</div><div class="ticker-chg up">long buildup</div></div>
+    </div>
+    <div class="sec-lbl">top OI strikes · Nifty weekly expiry</div>
+    <div class="row-list">
+      <div class="row-item"><div class="row-left"><div class="row-name">24,500 CE</div><div class="row-sub">Call · strong resistance</div></div><div class="row-right"><div class="row-val">₹142</div><div class="row-chg flat">OI: 48.2L</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">24,000 PE</div><div class="row-sub">Put · strong support</div></div><div class="row-right"><div class="row-val">₹88</div><div class="row-chg flat">OI: 61.4L</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">25,000 CE</div><div class="row-sub">Call · far OTM</div></div><div class="row-right"><div class="row-val">₹31</div><div class="row-chg flat">OI: 29.8L</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">23,500 PE</div><div class="row-sub">Put · deep support</div></div><div class="row-right"><div class="row-val">₹24</div><div class="row-chg flat">OI: 22.1L</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">24,200 CE</div><div class="row-sub">Call · near OTM</div></div><div class="row-right"><div class="row-val">₹84</div><div class="row-chg flat">OI: 18.4L</div></div></div>
+    </div>
+    <div class="panel-ai"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai read</div><div class="ai-txt">Low VIX signals market calm — options are cheap right now, good time for hedges. Strong put OI at 24,000 suggests institutions defending that level. PCR above 1.2 is mildly bullish near-term. Max pain at 24,500.</div></div>
+  </div>
+
+  <!-- ETFs & MFs -->
+  <div class="panel-content" id="panel-etfs">
+    <div class="ticker-bar">
+      <div class="ticker-item"><div class="ticker-name">NIFTY BEES</div><div class="ticker-val">₹248</div><div class="ticker-chg up">▲0.38%</div></div>
+      <div class="ticker-item"><div class="ticker-name">GOLD ETF</div><div class="ticker-val">₹77.4</div><div class="ticker-chg up">▲0.52%</div></div>
+      <div class="ticker-item"><div class="ticker-name">MF NET FLOW</div><div class="ticker-val">₹24,200Cr</div><div class="ticker-chg up">▲Apr</div></div>
+    </div>
+    <div class="sec-lbl">top performing MFs · 1Y returns</div>
+    <div class="row-list">
+      <div class="row-item"><div class="row-left"><div class="row-name">Quant Small Cap</div><div class="row-sub">Small cap · Direct</div></div><div class="row-right"><div class="row-val">42.8%</div><div class="row-chg up">top quartile</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Nippon India IT</div><div class="row-sub">Sectoral · Direct</div></div><div class="row-right"><div class="row-val">38.4%</div><div class="row-chg up">top quartile</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Parag Parikh Flexi</div><div class="row-sub">Flexi cap · Direct</div></div><div class="row-right"><div class="row-val">28.1%</div><div class="row-chg up">consistent</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">HDFC Mid-Cap Opp</div><div class="row-sub">Mid cap · Direct</div></div><div class="row-right"><div class="row-val">26.7%</div><div class="row-chg up">consistent</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Mirae Asset Large</div><div class="row-sub">Large cap · Direct</div></div><div class="row-right"><div class="row-val">21.4%</div><div class="row-chg flat">market</div></div></div>
+    </div>
+    <div class="sec-lbl">ETFs</div>
+    <div class="row-list">
+      <div class="row-item"><div class="row-left"><div class="row-name">Nifty BeES</div><div class="row-sub">Index ETF · AUM ₹24,000Cr</div></div><div class="row-right"><div class="row-val">₹248</div><div class="row-chg up">▲0.38%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">SBI Gold ETF</div><div class="row-sub">Commodity ETF</div></div><div class="row-right"><div class="row-val">₹77.4</div><div class="row-chg up">▲0.52%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Mirae US Top 50</div><div class="row-sub">International ETF</div></div><div class="row-right"><div class="row-val">₹19.8</div><div class="row-chg up">▲0.71%</div></div></div>
+      <div class="row-item"><div class="row-left"><div class="row-name">Nippon India ETF</div><div class="row-sub">Nifty Next 50</div></div><div class="row-right"><div class="row-val">₹642</div><div class="row-chg up">▲0.44%</div></div></div>
+    </div>
+    <div class="panel-ai"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai read</div><div class="ai-txt">Small and mid cap funds continuing strong run. IT sector funds benefiting from dollar strength. Passive ETF inflows accelerating — ₹4,200Cr into index funds in April alone, a record. SIP registrations at all-time high.</div></div>
+  </div>
+
+  <!-- NEWS FEED -->
+  <div style="border-top:0.5px solid var(--border);">
+    <div class="feed-header">
+      <div class="feed-title">live feed</div>
+      <div class="feed-filters">
+        <button class="filter-btn active">All</button>
+        <button class="filter-btn">Markets</button>
+        <button class="filter-btn">Policy</button>
+        <button class="filter-btn">Crypto</button>
+        <button class="filter-btn">Learn</button>
+      </div>
+    </div>
+
+    <div class="card breaking-card">
+      <div class="breaking-lbl"><i class="ti ti-bolt" style="font-size:12px"></i>breaking · 4 min ago</div>
+      <div class="card-meta"><span class="tag tag-blue">Policy</span><span class="card-time">RBI Bulletin · 12:00 PM</span><i class="ti ti-circle-check verified-icon"></i></div>
+      <div class="card-title">RBI holds repo rate at 6.5% for sixth consecutive meeting, flags inflation watch</div>
+      <div class="ai-box"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai plain english</div><div class="ai-txt">The central bank kept borrowing costs unchanged. Your home loan EMIs stay the same for now. RBI is watching inflation before making cuts — good for savers, neutral for borrowers.</div></div>
+      <div class="card-footer"><div class="card-actions"><button class="action-btn"><i class="ti ti-share"></i> share</button><button class="action-btn"><i class="ti ti-bookmark"></i> save</button><button class="action-btn"><i class="ti ti-message"></i> 24</button></div><span class="read-more">deep dive →</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-meta"><span class="tag tag-green">Markets</span><span class="card-time">18 min ago</span><i class="ti ti-circle-check verified-icon"></i></div>
+      <div class="card-title">India's current account deficit narrows to $8.3B in Q4 FY25, services exports drive improvement</div>
+      <div class="card-body">Remittances and software exports offset higher gold imports. Analysts call it structurally positive for the rupee over the medium term.</div>
+      <div class="ai-box"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai plain english</div><div class="ai-txt">India is spending less abroad than it earns. Like your monthly expenses coming below your income — good sign for the economy and rupee stability.</div></div>
+      <div class="card-footer"><div class="card-actions"><button class="action-btn"><i class="ti ti-share"></i> share</button><button class="action-btn"><i class="ti ti-bookmark"></i> save</button><button class="action-btn"><i class="ti ti-message"></i> 11</button></div><span class="read-more">deep dive →</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-meta"><span class="tag tag-amber">Crypto</span><span class="card-time">31 min ago</span></div>
+      <div class="card-title">Bitcoin holds above $103,000 for fourth consecutive day as ETF inflows accelerate</div>
+      <div class="card-body">Spot BTC ETFs saw $480M in net inflows yesterday, driven by institutional allocation from pension funds and sovereign wealth funds.</div>
+      <div class="ai-box"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai plain english</div><div class="ai-txt">Big institutions are buying Bitcoin through official ETF products — not retail speculation. This is different from 2021. Pension funds are now involved which makes it more stable.</div></div>
+      <div class="card-footer"><div class="card-actions"><button class="action-btn"><i class="ti ti-share"></i> share</button><button class="action-btn"><i class="ti ti-bookmark"></i> save</button><button class="action-btn"><i class="ti ti-message"></i> 47</button></div><span class="read-more">deep dive →</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-meta"><span class="tag tag-green">Markets</span><span class="card-time">1 hr ago</span><i class="ti ti-circle-check verified-icon"></i></div>
+      <div class="card-title">SEBI proposes new T+0 settlement rules for equity trades by FY26</div>
+      <div class="card-body">Same-day settlement as default could reduce counterparty risk significantly but requires brokers to upgrade infrastructure at significant cost.</div>
+      <div class="card-footer"><div class="card-actions"><button class="action-btn"><i class="ti ti-share"></i> share</button><button class="action-btn"><i class="ti ti-bookmark"></i> save</button><button class="action-btn"><i class="ti ti-message"></i> 8</button></div><span class="read-more">deep dive →</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-meta"><span class="tag tag-purple">Learn</span><span class="card-time">2 hrs ago</span></div>
+      <div class="card-title">What is a debt mutual fund and should you own one in 2026?</div>
+      <div class="card-body">With RBI on hold and yields stabilising, debt funds are back in conversation. Here's what they actually are and who they make sense for.</div>
+      <div class="card-footer"><div class="card-actions"><button class="action-btn"><i class="ti ti-eye"></i> 12.4k</button><button class="action-btn"><i class="ti ti-bookmark"></i> save</button></div><span class="read-more">read →</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-meta"><span class="tag tag-blue">Global</span><span class="card-time">3 hrs ago</span><i class="ti ti-circle-check verified-icon"></i></div>
+      <div class="card-title">US PCE inflation comes in at 2.3% in April, below expectations, dollar weakens</div>
+      <div class="card-body">Fed's preferred inflation gauge cools further, reviving rate cut expectations for September 2026. Markets now pricing 2 cuts this year.</div>
+      <div class="ai-box"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:12px"></i>ai plain english</div><div class="ai-txt">US inflation is cooling. The Fed may cut interest rates in September. Lower US rates = weaker dollar = stronger rupee = good for India's imports and foreign investment.</div></div>
+      <div class="card-footer"><div class="card-actions"><button class="action-btn"><i class="ti ti-share"></i> share</button><button class="action-btn"><i class="ti ti-bookmark"></i> save</button><button class="action-btn"><i class="ti ti-message"></i> 31</button></div><span class="read-more">deep dive →</span></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- RIGHT PANEL -->
+<aside class="right-panel">
+  <div class="search-box">
+    <i class="ti ti-search"></i>
+    <input type="text" placeholder="Search markets, news, companies...">
+  </div>
+
+  <div class="rp-section">
+    <div class="rp-title"><i class="ti ti-flame" style="font-size:15px;color:var(--red)"></i> trending</div>
+    <div class="trend-item"><span class="trend-num">1</span><span class="trend-text">RBI rate decision</span><span class="trend-tag"><span class="tag tag-blue">Policy</span></span></div>
+    <div class="trend-item"><span class="trend-num">2</span><span class="trend-text">Bitcoin $103K</span><span class="trend-tag"><span class="tag tag-amber">Crypto</span></span></div>
+    <div class="trend-item"><span class="trend-num">3</span><span class="trend-text">Nifty IT rally</span><span class="trend-tag"><span class="tag tag-green">Markets</span></span></div>
+    <div class="trend-item"><span class="trend-num">4</span><span class="trend-text">NTPC green bond</span><span class="trend-tag"><span class="tag tag-green">ESG</span></span></div>
+    <div class="trend-item"><span class="trend-num">5</span><span class="trend-text">US PCE inflation</span><span class="trend-tag"><span class="tag tag-blue">Global</span></span></div>
+    <div class="trend-item"><span class="trend-num">6</span><span class="trend-text">Sui token surge</span><span class="trend-tag"><span class="tag tag-amber">Crypto</span></span></div>
+  </div>
+
+  <div class="rp-section">
+    <div class="rp-title"><i class="ti ti-star" style="font-size:15px;color:var(--amber)"></i> watchlist</div>
+    <div class="watch-item"><div><div class="watch-name">BTC/USD</div><div style="font-size:11px;color:var(--text3)">Bitcoin</div></div><div class="watch-right"><div class="watch-val">$103,240</div><div class="watch-chg up">▲2.14%</div></div></div>
+    <div class="watch-item"><div><div class="watch-name">NIFTY 50</div><div style="font-size:11px;color:var(--text3)">NSE Index</div></div><div class="watch-right"><div class="watch-val">24,633</div><div class="watch-chg up">▲0.38%</div></div></div>
+    <div class="watch-item"><div><div class="watch-name">GOLD</div><div style="font-size:11px;color:var(--text3)">Spot $/oz</div></div><div class="watch-right"><div class="watch-val">$3,284</div><div class="watch-chg up">▲0.72%</div></div></div>
+    <div class="watch-item"><div><div class="watch-name">USD/INR</div><div style="font-size:11px;color:var(--text3)">Forex</div></div><div class="watch-right"><div class="watch-val">84.32</div><div class="watch-chg down">▼0.18%</div></div></div>
+    <div class="watch-item"><div><div class="watch-name">RELIANCE</div><div style="font-size:11px;color:var(--text3)">NSE</div></div><div class="watch-right"><div class="watch-val">₹2,914</div><div class="watch-chg up">▲0.44%</div></div></div>
+    <div style="margin-top:10px;"><button style="width:100%;padding:7px;border-radius:var(--radius);border:0.5px solid var(--border);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font-body);transition:all 0.12s;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">+ add to watchlist</button></div>
+  </div>
+
+  <div class="rp-section">
+    <div class="rp-title"><i class="ti ti-calendar" style="font-size:15px;color:var(--text2)"></i> upcoming events</div>
+    <div style="display:flex;flex-direction:column;gap:0;">
+      <div style="padding:8px 0;border-bottom:0.5px solid var(--border);display:flex;gap:10px;align-items:flex-start;">
+        <div style="background:var(--accent-dim);color:var(--accent);border-radius:6px;padding:4px 8px;font-size:11px;font-weight:500;min-width:36px;text-align:center;flex-shrink:0;">Thu</div>
+        <div><div style="font-size:12px;color:var(--text1);font-weight:500;">RBI policy minutes</div><div style="font-size:11px;color:var(--text3);">10:00 AM IST</div></div>
+      </div>
+      <div style="padding:8px 0;border-bottom:0.5px solid var(--border);display:flex;gap:10px;align-items:flex-start;">
+        <div style="background:var(--bg3);color:var(--text2);border-radius:6px;padding:4px 8px;font-size:11px;font-weight:500;min-width:36px;text-align:center;flex-shrink:0;">Fri</div>
+        <div><div style="font-size:12px;color:var(--text1);font-weight:500;">US NFP jobs data</div><div style="font-size:11px;color:var(--text3);">6:00 PM IST</div></div>
+      </div>
+      <div style="padding:8px 0;border-bottom:0.5px solid var(--border);display:flex;gap:10px;align-items:flex-start;">
+        <div style="background:var(--bg3);color:var(--text2);border-radius:6px;padding:4px 8px;font-size:11px;font-weight:500;min-width:36px;text-align:center;flex-shrink:0;">Sat</div>
+        <div><div style="font-size:12px;color:var(--text1);font-weight:500;">BOJ rate decision</div><div style="font-size:11px;color:var(--text3);">8:00 AM IST</div></div>
+      </div>
+      <div style="padding:8px 0;display:flex;gap:10px;align-items:flex-start;">
+        <div style="background:var(--bg3);color:var(--text2);border-radius:6px;padding:4px 8px;font-size:11px;font-weight:500;min-width:36px;text-align:center;flex-shrink:0;">Mon</div>
+        <div><div style="font-size:12px;color:var(--text1);font-weight:500;">India CPI inflation</div><div style="font-size:11px;color:var(--text3);">5:30 PM IST</div></div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+</div>
+
+<button class="scrolltop" id="scrolltop" aria-label="Scroll to top"><i class="ti ti-arrow-up"></i></button>
+
+<script>
+const themeToggle = document.getElementById('theme-toggle');
+const html = document.documentElement;
+
+themeToggle.addEventListener('click', () => {
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  themeToggle.innerHTML = isDark ? '<i class="ti ti-moon"></i>' : '<i class="ti ti-sun"></i>';
+});
+
+document.querySelectorAll('.mtab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    const panelId = 'panel-' + tab.dataset.tab;
+    const panel = document.getElementById(panelId);
+    if(panel) panel.classList.add('active');
+  });
+});
+
+function switchTab(tabName, el) {
+  document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
+  const mtab = document.querySelector(`.mtab[data-tab="${tabName}"]`);
+  if(mtab) {
+    mtab.classList.add('active');
+    mtab.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  }
+  const panel = document.getElementById('panel-' + tabName);
+  if(panel) panel.classList.add('active');
+  document.getElementById('main-content').scrollTop = 0;
+}
+
+function setFeedFilter(filter, el) {
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+const scrolltop = document.getElementById('scrolltop');
+const mainContent = document.getElementById('main-content');
+mainContent.addEventListener('scroll', () => {
+  scrolltop.classList.toggle('show', mainContent.scrollTop > 400);
+});
+scrolltop.addEventListener('click', () => {
+  mainContent.scrollTo({top:0,behavior:'smooth'});
+});
+</script>
+<script src="live-data.js"></script>
+</body>
+</html>
